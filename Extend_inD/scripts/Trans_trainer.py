@@ -69,7 +69,7 @@ def main():
     
 
     # # specify the directory for training and challenge data   
-    train_paths= sorted(glob.glob(str(pathlib.Path(__file__).parent / "../inD-dataset-v1.0/trajectories/*.txt")))
+    train_paths=  sorted(glob.glob(str(pathlib.Path(__file__).parent /"../trajectories_InD/*.txt")))
          
     # Process the data
     for path in train_paths:
@@ -94,7 +94,7 @@ def main():
     filepath=pathlib.Path(__file__).parent / f"../models/trans_net_{args.pred_seq}_{args.epochs}_{timestr}.hdf5"
     ## Eraly stop
     earlystop = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=args.patience)
-    checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(str(filepath), monitor='val_loss', verbose=0, save_best_only=True, mode='min')
     callbacks_list = [earlystop, checkpoint]  
   
     # # Instantiate the model
@@ -210,8 +210,8 @@ def main():
         
         
         # ToDo, store the multi predictions for later visualization
-        multi_predictions = writer.get_index_predictions(test_trajs[:, :args.obs_seq, :], predictions)
-        np.save(pathlib.Path(__file__).parent / "../prediction/{testdata_list[0]}", multi_predictions)
+        #multi_predictions = writer.get_index_predictions(test_trajs[:, :args.obs_seq, :], predictions)
+        #np.save(pathlib.Path(__file__).parent / "../prediction/{testdata_list[0]}", multi_predictions)
         
         
         ##        

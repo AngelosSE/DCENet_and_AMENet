@@ -70,10 +70,11 @@ def main():
     
 
     # # specify the directory for training and challenge data   
-    train_paths= sorted(glob.glob("../inD-dataset-v1.0/trajectories/*.txt"))
+    train_paths= sorted(glob.glob(str(pathlib.Path(__file__).parent /"../trajectories_InD/*.txt")))
     
          
     # Process the data
+    pathlib.Path.mkdir(pathlib.Path(__file__).parent / "../processed_data/train/",exist_ok=True,parents=True)
     for path in train_paths:
         # dataname = path.split('\\')[-1].split('.')[0]
         dataname = os.path.splitext(os.path.basename(path))[0]
@@ -92,10 +93,10 @@ def main():
     
     # Define the callback and early stop
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    filepath="../models/ame_%s_%0.f_%s.hdf5"%(str(args.pred_seq), args.epochs, timestr)
+    filepath= pathlib.Path(__file__).parent / f"../models/ame_{str(args.pred_seq)}_{args.epochs}_{timestr}.hdf5"
     ## Eraly stop
     earlystop = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=args.patience)
-    checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=0, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(str(filepath), monitor='val_loss', verbose=0, save_best_only=True, mode='min')
     callbacks_list = [earlystop, checkpoint]  
   
     # # Instantiate the model

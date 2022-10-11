@@ -6,6 +6,7 @@ This is the class to store the data information after preprocess
 
 import glob
 import os
+import pathlib
 
 class datainfo():
     
@@ -30,7 +31,7 @@ class datainfo():
                 else:
                     test_data_agu.append(test_dataname+"_%.0f"%(i))
         
-        all_traindata_dirs = sorted(glob.glob(os.path.join("../processed_data/train", "*.npz")))
+        all_traindata_dirs = sorted(glob.glob(str(pathlib.Path(__file__).parent /"../trajectories_InD/*.txt")))
         train_data = []
         for train_dir in all_traindata_dirs:
             # train_dataname = train_dir.split('\\')[-1].split('.')[0]
