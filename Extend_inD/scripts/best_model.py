@@ -23,6 +23,33 @@ from transformer_encoder import Encoder
 # from roilayer import ROIPoolingLayer
 # from transformer import TransformerBlock
 
+"""
+# I tried including this but still, the results are not reproducible.
+# I similarly tried manipulating multi_head_attention.py to set the
+# kernel initialization.
+import functools
+from keras.initializers import glorot_uniform
+#https://stackoverflow.com/questions/56565888/keras-reproducible-results-simple-mlp-on-cpu
+def kernel_initialization(cls): # TODO: seed must be different for each layer?
+    @functools.wraps(cls,updated=())    
+    class wrapper(cls):
+        def __init__(self,*args,**kwargs):
+            kwargs['kernel_initializer'] = glorot_uniform(seed=0)
+            super().__init__(*args,**kwargs)
+    print(wrapper)
+    return wrapper
+
+Dense = kernel_initialization(Dense)
+Conv1D = kernel_initialization(Conv1D)
+Conv2D = kernel_initialization(Conv2D)
+LSTM = kernel_initialization(LSTM)
+def dropout_seed(cls):
+    @functools.wraps(cls)
+    def wrapper(*args,**kwargs):
+        return cls(*args,**kwargs,seed=0)
+    return wrapper
+Dropout=dropout_seed(Dropout)
+"""
 
 class Acvae():
 
@@ -159,7 +186,7 @@ class Acvae():
 
         def sampling(params):
             mu, log_var = params
-            eps = K.random_normal(shape=(K.shape(mu)[0], z_dim), mean=0., stddev=1.0)
+            eps = K.random_normal(shape=(K.shape(mu)[0], z_dim), mean=0., stddev=1.0)# ,seed=0) #putting seed = 0 did not help make results reproducible.
             return mu + K.exp(log_var / 2.) * eps
 
         # sampling z

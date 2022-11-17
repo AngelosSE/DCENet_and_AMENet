@@ -15,6 +15,31 @@ from tensorflow.keras import layers
 
 import numpy as np
 
+
+"""
+# I tried including this but still, the results are not reproducible.
+# I similarly tried manipulating multi_head_attention.py to set the
+# kernel initialization.
+import functools
+from keras.initializers import glorot_uniform
+def kernel_initialization(cls): # TODO: seed must be different for each layer initialization??
+    @functools.wraps(cls,updated=())    
+    class wrapper(cls):
+        def __init__(self,*args,**kwargs):
+            kwargs['kernel_initializer'] = glorot_uniform(seed=0)
+            super().__init__(*args,**kwargs)
+    print(wrapper)
+    return wrapper
+
+Dense = kernel_initialization(Dense)
+def dropout_seed(cls):
+    @functools.wraps(cls)
+    def wrapper(*args,**kwargs):
+        return cls(*args,**kwargs,seed=0)
+    return wrapper
+Dropout=dropout_seed(Dropout)
+"""
+
 class LayerNormalization(Layer):
     """
     Implementation of Layer Normalization (https://arxiv.org/abs/1607.06450).
