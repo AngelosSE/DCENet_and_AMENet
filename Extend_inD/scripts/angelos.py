@@ -90,14 +90,14 @@ def their_code(dfs):
     print(FDEs)
 
 def main(model):
-    recordingIds = [5,6,14,15,16,17,26,27,28,29,32]
+    recordingIds = [5,6,14,15,16,17,26,27,28,29,32] # all test data, compare datainfo.py
     paths = {'predictions': pathlib.Path(__file__).parent / f'../results/{model}'
             ,'truth':pathlib.Path(__file__).parent / '../trajectories_InD'}
     dfs = {}
     for case,path in paths.items():
         tmp = load_data(path,recordingIds)
         dfs[case] = tmp
-        dfs[case] = tmp.groupby('objectId').apply(lambda g: g.iloc[8:])
+        dfs[case] = tmp.groupby('objectId').apply(lambda g: g.iloc[8:]) # discard observed data, keep only future data
         dfs[case] = dfs[case].droplevel('objectId')  
 
     df = dfs['predictions']
