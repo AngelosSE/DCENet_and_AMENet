@@ -24,7 +24,8 @@ import pathlib
 np.set_printoptions(suppress=True)
 
 
-def main():
+
+def main(do_train=True,model_name=None,learning_rate=3e-4,pretrained_model=None):
     
     desc = "Keras implementation of CVAE for trajectory prediction"
     parser = argparse.ArgumentParser(description=desc) 
@@ -47,13 +48,13 @@ def main():
     parser.add_argument('--beta', type=float, default=0.65, help='Loss weight')
     parser.add_argument('--query_dim', type=int, default=4, help='The dimension of the query')
     parser.add_argument('--keyvalue_dim', type=int, default=4, help='The dimension for key and value')    
-    parser.add_argument('--train_mode', type=bool, default=False, help='This is the training mode')
+    parser.add_argument('--train_mode', type=bool, default=do_train, help='This is the training mode')
     parser.add_argument('--train_set', type=str, choices=['Train'], default='sharedspaces', 
                         help='This is the directories for the training data')
     parser.add_argument('--challenge_set', type=str, choices=['Test'], default='Test', 
                         help='This is the directories for the challenge data')
     parser.add_argument('--split', type=float, default=0.8, help='the split rate for training and validation')
-    parser.add_argument('--lr', type=float, default=3e-4, help='Learning rate') # train with 3e-4, fine-tune with 1e-4
+    parser.add_argument('--lr', type=float, default=learning_rate, help='Learning rate') # train with 3e-4, fine-tune with 1e-4
     parser.add_argument('--aug_num', type=int, default=1, help='Number of augmentations')
     parser.add_argument('--epochs', type=int, default=1000, help='Number of batches')
     parser.add_argument('--patience', type=int, default=30, help='Maximum mumber of continuous epochs without converging')    
@@ -91,7 +92,10 @@ def main():
     
     # Define the callback and early stop
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    filepath=pathlib.Path(__file__).parent / f"../models/trans_net_{args.pred_seq}_{args.epochs}_{timestr}.hdf5"
+    if model_name is None:
+        model_name = f'trans_net_{args.pred_seq}_{args.epochs}_{timestr}'
+    filepath=pathlib.Path(__file__).parent / f"../models/{model_name}.hdf5"
+
     ## Eraly stop
     earlystop = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=args.patience)
     checkpoint = ModelCheckpoint(str(filepath), monitor='val_loss', verbose=0, save_best_only=True, mode='min')
@@ -140,7 +144,9 @@ def main():
         
         print("Start training the model...") 
         # Retrain from last time
-        train.load_weights(str((pathlib.Path(__file__).parent / "../models/trans_net_12_1000_20220922-222311.hdf5"))) 
+        if pretrained_model is not None:
+            print('Load pretrained model')
+            train.load_weights(str((pathlib.Path(__file__).parent / f"../models/{pretrained_model}.hdf5")))
 
         train.fit(x=[train_occu, train_x, train_y_occu, train_y],
                       y=train_y,
@@ -155,7 +161,9 @@ def main():
         
     else:
         print('Run pretrained model')
-        train.load_weights(pathlib.Path(__file__).parent / "../models/trans_net_12_1000_20220922-222311.hdf5")
+        if model_name is None:
+            model_name = 'trans_net_12_1000_20220922-222311'
+        train.load_weights(pathlib.Path(__file__).parent / f"../models/{model_name}.hdf5")
 
         
         
@@ -236,4 +244,4 @@ def main():
         
         
 if __name__ == "__main__":
-    main()
+    main(do_train=False,model_name='dcenet_20221110-220124_2')
