@@ -70,13 +70,7 @@ else:
     models = [
                 (ame_trainer,'amenet_20221109-090647_2'),
                 (Trans_trainer,'dcenet_20221109-090647_2')]
-    #models = [
-    #            (ame_trainer,'amenet_20221109-132912_2'),
-    #            (Trans_trainer,'dcenet_20221109-132912_2')]
-   #models = [
-   #            (ame_trainer,'amenet_20221110-220124_2'),
-   #            (Trans_trainer,'dcenet_20221110-220124_2')
-   #            ]
+
 
     for model,name in models:
         # Clear data cached by model
